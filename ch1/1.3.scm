@@ -1,0 +1,5 @@
+(define (sum-of-squares a b) (+ (* a a) (* b b)))
+(define (solution x y z)
+  (cond ((and (<= x y) (<= x z)) (sum-of-squares y z))
+        ((<= y z)                (sum-of-squares x z))
+        (else                    (sum-of-squares x y))))

@@ -1,0 +1,32 @@
+(define (position row col) (cons row col))
+(define (row-position position) (car position))
+(define (col-position position) (cdr position))
+(define (adjoin-position row col positions) (cons (position row col) positions))
+(define empty-board '())
+
+(define (same-row? p1 p2) (= (row p1) (row p2)))
+(define (same-col? p1 p2) (= (col p1) (col p2)))
+(define (same-diagonal? p1 p2) (= (abs (- (row p1) (row p2))) (abs (- (col p1) (col p2)))))
+(define (in-check? p1 p2)
+  (or (same-row? p1 p2) (same-col? p1 p2) (same-diagonal? p1 p2)))
+
+(define (all? pred items)
+  (accumulate (lambda (acc item) (and acc item)) true (map pred items)))
+(define (safe? positions)
+  (let ((new-position (car positions))
+        (other-positions (cdr positions)))
+      (all? (lambda (position) (not (in-check? new-position position)))
+        other-positions)))
+
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+          (lambda (positions) (safe? k positions))
+          (flatmap
+            (lambda (rest-of-queens)
+              (map (lambda (new-row) (adjoin-position new-row k rest-of-queens))
+                   (enumerate-interval 1 board-size)))
+            (queen-cols (- k 1))))))
+  (queen-cols board-size))
